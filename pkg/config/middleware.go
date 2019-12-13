@@ -79,8 +79,20 @@ func SetupGlobalMiddleware(handler http.Handler) http.Handler {
 	}
 
 	n.Use(&negroni.Static{
+		Dir:       http.Dir("./docs/api_docs/"),
+		Prefix:     Config.WebPrefix + "/docs/api",
+		IndexFile: "index.html",
+	})
+
+	n.Use(&negroni.Static{
+		Dir:       http.Dir("./docs/"),
+		Prefix:     Config.WebPrefix + "/docs",
+		IndexFile: "index.html",
+	})
+
+	n.Use(&negroni.Static{
 		Dir:       http.Dir("./browser/flagr-ui/dist/"),
-		Prefix:    Config.WebPrefix,
+		Prefix:     Config.WebPrefix,
 		IndexFile: "index.html",
 	})
 

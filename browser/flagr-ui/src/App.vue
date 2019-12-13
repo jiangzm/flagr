@@ -8,10 +8,10 @@
           </router-link>
         </el-col>
         <el-col :span="2" :offset="13">
-          <a href="https://checkr.github.io/flagr/api_docs" target="_blank"><h3>API</h3></a>
+          <a href="/docs/api" target="_blank"><h3>API</h3></a>
         </el-col>
         <el-col :span="2">
-          <a href="https://checkr.github.io/flagr" target="_blank"><h3>Docs</h3></a>
+          <a href="/docs" target="_blank"><h3>Docs</h3></a>
         </el-col>
       </el-row>
     </el-menu>
