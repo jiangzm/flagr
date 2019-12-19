@@ -170,6 +170,7 @@ var Config = struct {
 	*/
 	JWTAuthEnabled              bool     `env:"FLAGR_JWT_AUTH_ENABLED" envDefault:"false"`
 	JWTAuthDebug                bool     `env:"FLAGR_JWT_AUTH_DEBUG" envDefault:"false"`
+	JWTAuthWhitelistRemoteAddresses []string `env:"FLAGR_JWT_AUTH_WHITELIST_REMOTE_ADDRESSES" envDefault:"127.0.0.1" envSeparator:","`
 	JWTAuthPrefixWhitelistPaths []string `env:"FLAGR_JWT_AUTH_WHITELIST_PATHS" envDefault:"/api/v1/evaluation,/static" envSeparator:","`
 	JWTAuthExactWhitelistPaths  []string `env:"FLAGR_JWT_AUTH_EXACT_WHITELIST_PATHS" envDefault:",/" envSeparator:","`
 	JWTAuthCookieTokenName      string   `env:"FLAGR_JWT_AUTH_COOKIE_TOKEN_NAME" envDefault:"access_token"`
