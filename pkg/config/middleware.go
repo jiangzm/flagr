@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	"github.com/DataDog/datadog-go/statsd"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -151,6 +150,7 @@ func setupJWTAuthMiddleware() *auth {
 	}
 
 	return &auth{
+		WhitelistRemoteAddresses: Config.JWTAuthWhitelistRemoteAddresses,
 		PrefixWhitelistPaths: Config.JWTAuthPrefixWhitelistPaths,
 		ExactWhitelistPaths:  Config.JWTAuthExactWhitelistPaths,
 		JWTMiddleware: jwtmiddleware.New(jwtmiddleware.Options{
@@ -188,6 +188,7 @@ func jwtErrorHandler(w http.ResponseWriter, r *http.Request, err string) {
 }
 
 type auth struct {
+	WhitelistRemoteAddresses []string
 	PrefixWhitelistPaths []string
 	ExactWhitelistPaths  []string
 	JWTMiddleware        *jwtmiddleware.JWTMiddleware
@@ -205,6 +206,14 @@ func (a *auth) whitelist(req *http.Request) bool {
 		}
 	}
 
+	//Specific IPs are able to visit all our services, such our VPN or office network
+	for _, r := range a.WhitelistRemoteAddresses {
+		if r != "" && strings.HasPrefix(req.RemoteAddr, r){
+			return true
+		}
+	}
+
+	//Open only some of the APIs for external
 	for _, p := range a.PrefixWhitelistPaths {
 		if p != "" && strings.HasPrefix(path, p) {
 			return true
