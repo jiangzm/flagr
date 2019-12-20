@@ -2,10 +2,6 @@ package config
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
 	"github.com/DataDog/datadog-go/statsd"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -19,6 +15,10 @@ import (
 	"github.com/urfave/negroni"
 	negroninewrelic "github.com/yadvendar/negroni-newrelic-go-agent"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // ServerShutdown is a callback function that will be called when
@@ -79,19 +79,19 @@ func SetupGlobalMiddleware(handler http.Handler) http.Handler {
 
 	n.Use(&negroni.Static{
 		Dir:       http.Dir("./docs/api_docs/"),
-		Prefix:     Config.WebPrefix + "/docs/api",
+		Prefix:    Config.WebPrefix + "/docs/api",
 		IndexFile: "index.html",
 	})
 
 	n.Use(&negroni.Static{
 		Dir:       http.Dir("./docs/"),
-		Prefix:     Config.WebPrefix + "/docs",
+		Prefix:    Config.WebPrefix + "/docs",
 		IndexFile: "index.html",
 	})
 
 	n.Use(&negroni.Static{
 		Dir:       http.Dir("./browser/flagr-ui/dist/"),
-		Prefix:     Config.WebPrefix,
+		Prefix:    Config.WebPrefix,
 		IndexFile: "index.html",
 	})
 
@@ -151,8 +151,8 @@ func setupJWTAuthMiddleware() *auth {
 
 	return &auth{
 		WhitelistRemoteAddresses: Config.JWTAuthWhitelistRemoteAddresses,
-		PrefixWhitelistPaths: Config.JWTAuthPrefixWhitelistPaths,
-		ExactWhitelistPaths:  Config.JWTAuthExactWhitelistPaths,
+		PrefixWhitelistPaths:     Config.JWTAuthPrefixWhitelistPaths,
+		ExactWhitelistPaths:      Config.JWTAuthExactWhitelistPaths,
 		JWTMiddleware: jwtmiddleware.New(jwtmiddleware.Options{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 				return validationKey, errParsingKey
@@ -189,9 +189,9 @@ func jwtErrorHandler(w http.ResponseWriter, r *http.Request, err string) {
 
 type auth struct {
 	WhitelistRemoteAddresses []string
-	PrefixWhitelistPaths []string
-	ExactWhitelistPaths  []string
-	JWTMiddleware        *jwtmiddleware.JWTMiddleware
+	PrefixWhitelistPaths     []string
+	ExactWhitelistPaths      []string
+	JWTMiddleware            *jwtmiddleware.JWTMiddleware
 }
 
 func (a *auth) whitelist(req *http.Request) bool {
@@ -206,9 +206,17 @@ func (a *auth) whitelist(req *http.Request) bool {
 		}
 	}
 
-	//Specific IPs are able to visit all our services, such our VPN or office network
+	//Specific IPs are able to visit all our services, such as our VPN or office network
+	xff := req.Header["X-Forwarded-For"]
+	realRemoteAddr := ""
+	if len(xff) == 0 {
+		realRemoteAddr = req.RemoteAddr
+	} else {
+		realRemoteAddr = strings.TrimSpace(strings.Split(xff[0], ",")[0])
+	}
+
 	for _, r := range a.WhitelistRemoteAddresses {
-		if r != "" && strings.HasPrefix(req.RemoteAddr, r){
+		if r != "" && strings.HasPrefix(realRemoteAddr, r) {
 			return true
 		}
 	}
