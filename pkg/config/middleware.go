@@ -214,9 +214,9 @@ func (a *auth) whitelist(req *http.Request) bool {
 	} else {
 		realRemoteAddr = strings.TrimSpace(strings.Split(xff[0], ",")[0])
 	}
-	
+
 	for _, r := range a.WhitelistRemoteAddresses {
-		if r == realRemoteAddr {
+		if r != "" && strings.HasPrefix(realRemoteAddr, r) {
 			return true
 		}
 	}
