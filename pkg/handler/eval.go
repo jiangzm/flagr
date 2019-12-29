@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
-
 	"github.com/checkr/flagr/pkg/config"
 	"github.com/checkr/flagr/pkg/entity"
 	"github.com/checkr/flagr/pkg/util"
@@ -23,6 +22,7 @@ import (
 type Eval interface {
 	PostEvaluation(evaluation.PostEvaluationParams) middleware.Responder
 	PostEvaluationBatch(evaluation.PostEvaluationBatchParams) middleware.Responder
+	PostLiteEvaluation(evaluation.PostLiteEvaluationParams) middleware.Responder
 }
 
 // NewEval creates a new Eval instance
@@ -38,7 +38,6 @@ func (e *eval) PostEvaluation(params evaluation.PostEvaluationParams) middleware
 		return evaluation.NewPostEvaluationDefault(400).WithPayload(
 			ErrorMessage("empty body"))
 	}
-
 	evalResult := EvalFlag(*evalContext)
 	resp := evaluation.NewPostEvaluationOK()
 	resp.SetPayload(evalResult)
@@ -82,6 +81,18 @@ func (e *eval) PostEvaluationBatch(params evaluation.PostEvaluationBatchParams) 
 	return resp
 }
 
+func (e *eval) PostLiteEvaluation(params evaluation.PostLiteEvaluationParams) middleware.Responder {
+	liteEvalContext := params.Body
+	if liteEvalContext == nil {
+		return evaluation.NewPostLiteEvaluationDefault(400).WithPayload(
+			ErrorMessage("empty body"))
+	}
+	resp := evaluation.NewPostLiteEvaluationOK()
+	liteFlag := LiteEvalFlag(*liteEvalContext)
+	resp.SetPayload(liteFlag)
+	return resp
+}
+
 // BlankResult creates a blank result
 func BlankResult(f *entity.Flag, evalContext models.EvalContext, msg string) *models.EvalResult {
 	flagID := uint(0)
@@ -102,6 +113,23 @@ func BlankResult(f *entity.Flag, evalContext models.EvalContext, msg string) *mo
 		FlagKey:        flagKey,
 		FlagSnapshotID: int64(flagSnapshotID),
 		Timestamp:      util.TimeNow(),
+	}
+}
+
+var LiteEvalFlag = func(liteEvalContext models.LiteEvalContext) *models.LiteEvalResult{
+	//Construct a complete eval context by our lite version, then reduce the result to a lite one containing only what we need
+	fullEvalContext := models.EvalContext{
+		EnableDebug: liteEvalContext.EnableDebug,
+		EntityID: liteEvalContext.EntityID,
+		EntityType: liteEvalContext.EntityType,
+		EntityContext: liteEvalContext.EntityContext,
+		FlagID: liteEvalContext.FlagID,
+	}
+	fullEvalResult := EvalFlag(fullEvalContext)
+	return &models.LiteEvalResult{
+		 fullEvalResult.EvalDebugLog, 
+		fullEvalResult.VariantAttachment, 
+		fullEvalResult.VariantKey,
 	}
 }
 

@@ -1,0 +1,21 @@
+post:
+    tags:
+      - evaluation
+    operationId: postLiteEvaluation
+    parameters:
+        - in: body
+          name: body
+          description: lite evalution context
+          required: true
+          schema:
+            $ref: "#/definitions/liteEvalContext"
+    responses:
+      200:
+        description: lite evaluation result
+        schema:
+          $ref: "#/definitions/liteEvalResult"
+      default:
+        description: generic error response
+        schema:
+          $ref: "#/definitions/error"
+  

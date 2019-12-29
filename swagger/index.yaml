@@ -74,6 +74,8 @@ paths:
     $ref: ./flag_entity_types.yaml
   /evaluation:
     $ref: ./evaluation.yaml
+  /evaluation/lite:
+    $ref: ./evaluation_lite.yaml
   /evaluation/batch:
     $ref: ./evaluation_batch.yaml
   /health:
@@ -393,6 +395,35 @@ definitions:
         items:
           $ref: "#/definitions/distribution"
 
+  #Lite evaluation 
+  liteEvalContext:
+    type: object
+    properties:
+      entityID:
+        type: string
+        description: entityID is used to represent current user
+      entityType:
+        type: string
+      entityContext:
+        type: object
+      enableDebug:
+        type: boolean
+      flagID:
+        description: flagID
+        type: integer
+        format: int64
+        minimum: 1
+
+  liteEvalResult:
+    type: object
+    properties:
+      variantKey:
+        type: string
+      variantAttachment:  
+        type: object
+      evalDebugLog:
+        $ref: "#/definitions/evalDebugLog"
+    
   # Evaluation
   evalContext:
     type: object

@@ -110,6 +110,9 @@ func NewFlagrAPI(spec *loads.Document) *FlagrAPI {
 		EvaluationPostEvaluationBatchHandler: evaluation.PostEvaluationBatchHandlerFunc(func(params evaluation.PostEvaluationBatchParams) middleware.Responder {
 			return middleware.NotImplemented("operation EvaluationPostEvaluationBatch has not yet been implemented")
 		}),
+		EvaluationPostLiteEvaluationHandler: evaluation.PostLiteEvaluationHandlerFunc(func(params evaluation.PostLiteEvaluationParams) middleware.Responder {
+			return middleware.NotImplemented("operation EvaluationPostLiteEvaluation has not yet been implemented")
+		}),
 		ConstraintPutConstraintHandler: constraint.PutConstraintHandlerFunc(func(params constraint.PutConstraintParams) middleware.Responder {
 			return middleware.NotImplemented("operation ConstraintPutConstraint has not yet been implemented")
 		}),
@@ -207,6 +210,8 @@ type FlagrAPI struct {
 	EvaluationPostEvaluationHandler evaluation.PostEvaluationHandler
 	// EvaluationPostEvaluationBatchHandler sets the operation handler for the post evaluation batch operation
 	EvaluationPostEvaluationBatchHandler evaluation.PostEvaluationBatchHandler
+	// EvaluationPostLiteEvaluationHandler sets the operation handler for the post lite evaluation operation
+	EvaluationPostLiteEvaluationHandler evaluation.PostLiteEvaluationHandler
 	// ConstraintPutConstraintHandler sets the operation handler for the put constraint operation
 	ConstraintPutConstraintHandler constraint.PutConstraintHandler
 	// DistributionPutDistributionsHandler sets the operation handler for the put distributions operation
@@ -370,6 +375,10 @@ func (o *FlagrAPI) Validate() error {
 
 	if o.EvaluationPostEvaluationBatchHandler == nil {
 		unregistered = append(unregistered, "evaluation.PostEvaluationBatchHandler")
+	}
+
+	if o.EvaluationPostLiteEvaluationHandler == nil {
+		unregistered = append(unregistered, "evaluation.PostLiteEvaluationHandler")
 	}
 
 	if o.ConstraintPutConstraintHandler == nil {
@@ -605,6 +614,11 @@ func (o *FlagrAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/evaluation/batch"] = evaluation.NewPostEvaluationBatch(o.context, o.EvaluationPostEvaluationBatchHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/evaluation/lite"] = evaluation.NewPostLiteEvaluation(o.context, o.EvaluationPostLiteEvaluationHandler)
 
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)

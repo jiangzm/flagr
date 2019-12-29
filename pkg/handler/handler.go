@@ -75,7 +75,7 @@ func setupEvaluation(api *operations.FlagrAPI) {
 	e := NewEval()
 	api.EvaluationPostEvaluationHandler = evaluation.PostEvaluationHandlerFunc(e.PostEvaluation)
 	api.EvaluationPostEvaluationBatchHandler = evaluation.PostEvaluationBatchHandlerFunc(e.PostEvaluationBatch)
-
+	api.EvaluationPostLiteEvaluationHandler = evaluation.PostLiteEvaluationHandlerFunc(e.PostLiteEvaluation)
 	if config.Config.RecorderEnabled {
 		// Try GetDataRecorder to catch fatal errors before we start the evaluation api
 		GetDataRecorder()
