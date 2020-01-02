@@ -101,6 +101,39 @@ func init() {
         }
       }
     },
+    "/evaluation/lite": {
+      "post": {
+        "tags": [
+          "evaluation"
+        ],
+        "operationId": "postLiteEvaluation",
+        "parameters": [
+          {
+            "description": "lite evalution context",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/liteEvalContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "lite evaluation result",
+            "schema": {
+              "$ref": "#/definitions/liteEvalResult"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/export/eval_cache/json": {
       "get": {
         "description": "Export JSON format of the eval cache dump",
@@ -1542,6 +1575,44 @@ func init() {
       "type": "object",
       "properties": {
         "status": {
+          "type": "string"
+        }
+      }
+    },
+    "liteEvalContext": {
+      "type": "object",
+      "properties": {
+        "enableDebug": {
+          "type": "boolean"
+        },
+        "entityContext": {
+          "type": "object"
+        },
+        "entityID": {
+          "description": "entityID is used to represent current user",
+          "type": "string"
+        },
+        "entityType": {
+          "type": "string"
+        },
+        "flagID": {
+          "description": "flagID",
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      }
+    },
+    "liteEvalResult": {
+      "type": "object",
+      "properties": {
+        "evalDebugLog": {
+          "$ref": "#/definitions/evalDebugLog"
+        },
+        "variantAttachment": {
+          "type": "object"
+        },
+        "variantKey": {
           "type": "string"
         }
       }
@@ -1874,6 +1945,39 @@ func init() {
         }
       }
     },
+    "/evaluation/lite": {
+      "post": {
+        "tags": [
+          "evaluation"
+        ],
+        "operationId": "postLiteEvaluation",
+        "parameters": [
+          {
+            "description": "lite evalution context",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/liteEvalContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "lite evaluation result",
+            "schema": {
+              "$ref": "#/definitions/liteEvalResult"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/export/eval_cache/json": {
       "get": {
         "description": "Export JSON format of the eval cache dump",
@@ -3317,6 +3421,44 @@ func init() {
       "type": "object",
       "properties": {
         "status": {
+          "type": "string"
+        }
+      }
+    },
+    "liteEvalContext": {
+      "type": "object",
+      "properties": {
+        "enableDebug": {
+          "type": "boolean"
+        },
+        "entityContext": {
+          "type": "object"
+        },
+        "entityID": {
+          "description": "entityID is used to represent current user",
+          "type": "string"
+        },
+        "entityType": {
+          "type": "string"
+        },
+        "flagID": {
+          "description": "flagID",
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      }
+    },
+    "liteEvalResult": {
+      "type": "object",
+      "properties": {
+        "evalDebugLog": {
+          "$ref": "#/definitions/evalDebugLog"
+        },
+        "variantAttachment": {
+          "type": "object"
+        },
+        "variantKey": {
           "type": "string"
         }
       }

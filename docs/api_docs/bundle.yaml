@@ -730,6 +730,27 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
+  /evaluation/lite:
+    post:
+      tags:
+        - evaluation
+      operationId: postLiteEvaluation
+      parameters:
+        - in: body
+          name: body
+          description: lite evalution context
+          required: true
+          schema:
+            $ref: '#/definitions/liteEvalContext'
+      responses:
+        '200':
+          description: lite evaluation result
+          schema:
+            $ref: '#/definitions/liteEvalResult'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
   /evaluation/batch:
     post:
       tags:
@@ -1104,6 +1125,32 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/distribution'
+  liteEvalContext:
+    type: object
+    properties:
+      entityID:
+        type: string
+        description: entityID is used to represent current user
+      entityType:
+        type: string
+      entityContext:
+        type: object
+      enableDebug:
+        type: boolean
+      flagID:
+        description: flagID
+        type: integer
+        format: int64
+        minimum: 1
+  liteEvalResult:
+    type: object
+    properties:
+      variantKey:
+        type: string
+      variantAttachment:
+        type: object
+      evalDebugLog:
+        $ref: '#/definitions/evalDebugLog'
   evalContext:
     type: object
     properties:
